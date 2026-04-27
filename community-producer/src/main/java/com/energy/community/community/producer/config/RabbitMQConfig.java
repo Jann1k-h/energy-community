@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+// RabbitMQ-Konfiguration für die Anwendung festelgen, damit z.B. rabbitTemplate.convertAndSend(...) funktioniert
 @Configuration
 public class RabbitMQConfig {
 

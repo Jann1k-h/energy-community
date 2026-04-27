@@ -6,14 +6,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Random;
+
 
 @Service
 public class EnergyProducerService {
 
+    // Obejekt zum Senden von Nachrichten an RabbitMQ
     private final RabbitTemplate rabbitTemplate;
+
+    // Objekt zum Abrufen von Wetterdaten
     private final WeatherService weatherService;
-    private final Random random = new Random();
+
 
     @Value("${rabbitmq.exchange.name}")
     private String exchangeName;
@@ -21,31 +24,32 @@ public class EnergyProducerService {
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
 
+    // Konstruktor (wird von Spring automatisch injiziert)
     public EnergyProducerService(RabbitTemplate rabbitTemplate, WeatherService weatherService) {
         this.rabbitTemplate = rabbitTemplate;
         this.weatherService = weatherService;
     }
 
     public void sendEnergyProduction() {
+
         int cloudCover = weatherService.getCloudCover();
 
         double sunFactor = (100 - cloudCover) / 100.0;
-
         double baseKwh = 0.002;
-        double randomKwh = random.nextDouble() * 0.004;
-
+        double randomKwh = Math.random() * 0.004;
         double kwh = baseKwh + (randomKwh * sunFactor);
         kwh = Math.round(kwh * 100000.0) / 100000.0;
 
-        String message = "{"
-        + "\"type\":\"PRODUCER\","
-        + "\"association\":\"COMMUNITY\","
-        + "\"kwh\":" + kwh + ","
-        + "\"datetime\":\"" + LocalDateTime.now() + "\""
-        + "}";
+        EnergyMessage message = new EnergyMessage(
+            "PRODUCER",
+            "COMMUNITY",
+            kwh,
+            LocalDateTime.now()
+        );
 
+        // Nachricht an RabbitMQ senden
         rabbitTemplate.convertAndSend(exchangeName, routingKey, message);
 
-        System.out.println("Gesendet: " + message);
+        System.out.println("Gesendet: " + message.getKwh());
     }
 }

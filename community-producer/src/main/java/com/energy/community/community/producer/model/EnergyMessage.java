@@ -1,8 +1,12 @@
 package com.energy.community.community.producer.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.io.Serializable;
 
-public class EnergyMessage {
+// EnergyMessage kann in der Form nach RabbitMQ gesendet werden, daher implementieren wir Serializable
+// Serializable ermöglicht es, dass das Objekt in einen Bytestream umgewandelt werden kann
+public class EnergyMessage implements Serializable{
 
     private String type;
     private String association;

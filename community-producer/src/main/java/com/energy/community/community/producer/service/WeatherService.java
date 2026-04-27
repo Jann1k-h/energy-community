@@ -1,31 +1,32 @@
 package com.energy.community.community.producer.service;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Map;
+import java.time.LocalDateTime;
 
 @Service
 public class WeatherService {
 
-    @Value("${weather.api.url}")
-    private String weatherApiUrl;
-
-    private final RestTemplate restTemplate = new RestTemplate();
+    private String url = "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=cloud_cover&past_days=0&forecast_days=1";
 
     public int getCloudCover() {
-        try {
-            Map response = restTemplate.getForObject(weatherApiUrl, Map.class);
 
-            Map current = (Map) response.get("current");
+        // API anfrage an URL; zurückgeschickt wird JSON, was in WeatherResponse Obejct gespeichert wird
+        // darin wird das Feld "hourly" befüllt, welches die cloud_cover-Daten enthält
+        // Hourly ist ein array, in dem die Werte für jede Stunde des Tages gespeichert sind
+        WeatherResponse response = new RestTemplate().getForObject(url, WeatherResponse.class);
 
-            Number cloudCover = (Number) current.get("cloud_cover");
+        int currentHour = LocalDateTime.now().getHour();
 
-            return cloudCover.intValue();
-        } catch (Exception e) {
-            System.out.println("Wetter API Fehler. Verwende Standardwert 50% Bewölkung.");
-            return 50;
-        }
+        return response.hourly.cloud_cover[currentHour];
     }
+}
+
+class WeatherResponse {
+    public Hourly hourly;
+}
+
+class Hourly {
+    public int[] cloud_cover;
 }
