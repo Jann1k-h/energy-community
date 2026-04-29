@@ -1,4 +1,4 @@
-package com.energy.community.community.producer.model;
+package com.energy.community.community.user.model;
 
 import java.time.LocalDateTime;
 

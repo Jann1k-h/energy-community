@@ -7,8 +7,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class EnergyUserScheduler {
 
+    // alle 5 Sekunden wird die Methode useEnergy() aufgerufen
+    // diese ruft sendEnergyUsage() im EnergyUserService auf
+
     private final EnergyUserService energyUserService;
 
+    // Konstruktor
     public EnergyUserScheduler(EnergyUserService energyUserService) {
         this.energyUserService = energyUserService;
     }
