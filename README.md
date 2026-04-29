@@ -13,44 +13,33 @@ Das System besteht aus 6 unabhängigen Komponenten:
 - Java 17
 - Maven 4.0.0
 - Docker (PostgreSQL, RabbitMQ und pgAdmin)
-- IntelliJ IDEA / VS Code / VCCodium
+- IntelliJ IDEA, VS Code oder VSCodium als IDE
 ## Installation & Start
 ### 1. Infrastruktur starten
-Startet PostgreSQL & RabbitMQ
+Startet PostgreSQL, RabbitMQ und pgAdmin
 ````markdown
 docker-compose up -d
 ````
 ### 2. Komponenten bauen
+Alle Komponenten mit Maven bauen:
 ````markdown
 mvn clean install
 ````
 ### 3. Konfiguration
-
+Überprüfen, ob die Wetter-API-URL korrekt konfiguriert ist (Standard für Wien):
 ````markdown
 # Standard: Wien (48.2082, 16.3738) 
-weather.api.url=https://api.open-meteo.com/v1/forecast?latitude=48.2082&longitude=16.3738&current=cloud_cover`
+weather.api.url=https://api.open-meteo.com/v1/forecast?latitude=48.2082&longitude=16.3738&current=cloud_cover
 ````
 ### 4. Dienste starten
-````markdown
-cd community-producer 
-java -jar target/community-producer.jar
+1. Überprüfen, ob Docker läuft
+2. CommunityProducerApplication starten (erstellt exchange, queue und binding → sendet PRODUCER-Nachrichten)
+3. UsageServiceApplication starten (konsumiert Nachrichten aus energy-queue und schreibt in energy_usage)
+4. CurrentPercentageApplication starten (liest energy_usage und schreibt current_percentage)
+5. CommunityUserApplication starten (sendet USER-Nachrichten)
 
-cd community-user 
-java -jar target/community-user.jar
 
-cd energy-api 
-java -jar target/energy-api.jar
-
-cd energy-gui 
-java -jar target/energy-gui.jar
-
-cd percentage-service 
-java -jar target/percentage-service.jar
-
-cd usage-service 
-java -jar target/usage-service.jar
-````
-### Projekt Struktur
+## Projekt Struktur
 ```
 ├── docker-compose.yml
 ├── Dockerfile
