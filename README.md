@@ -33,10 +33,10 @@ weather.api.url=https://api.open-meteo.com/v1/forecast?latitude=48.2082&longitud
 ````
 ### 4. Dienste starten
 1. Überprüfen, ob Docker läuft
-2. CommunityProducerApplication starten (erstellt exchange, queue und binding → sendet PRODUCER-Nachrichten)
-3. UsageServiceApplication starten (konsumiert Nachrichten aus energy-queue und schreibt in energy_usage)
-4. CurrentPercentageApplication starten (liest energy_usage und schreibt current_percentage)
-5. CommunityUserApplication starten (sendet USER-Nachrichten)
+2. **CommunityProducerApplication** starten (erstellt exchange, queue und binding → sendet PRODUCER-Nachrichten)
+3. **UsageServiceApplication** starten (konsumiert Nachrichten aus energy-queue und schreibt in energy_usage)
+4. **CurrentPercentageApplication** starten (liest energy_usage und schreibt current_percentage)
+5. **CommunityUserApplication** starten (sendet USER-Nachrichten)
 
 
 ## Projekt Struktur
