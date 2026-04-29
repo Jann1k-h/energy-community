@@ -27,7 +27,22 @@ public class EnergyProducerService {
     }
 
     public void sendEnergyProduction() {
-        double kwh = 1 + random.nextDouble() * 5;
+        int hour = LocalDateTime.now().getHour();
+
+        double baseProduction;
+
+        if (hour >= 6 && hour < 9) {
+            baseProduction = 0.006;      // Morgen: Sonne kommt langsam
+        } else if (hour >= 9 && hour < 16) {
+            baseProduction = 0.020;      // Tag: viel Solarproduktion
+        } else if (hour >= 16 && hour < 20) {
+            baseProduction = 0.008;      // Abend: Sonne wird schwächer
+        } else {
+            baseProduction = 0.0002;     // Nacht: fast keine Produktion
+        }
+
+        double weatherFactor = 0.8 + random.nextDouble() * 0.4; // 0.8 bis 1.2
+        double kwh = baseProduction * weatherFactor * 300;
 
         EnergyMessage message = new EnergyMessage(
                 "PRODUCER",

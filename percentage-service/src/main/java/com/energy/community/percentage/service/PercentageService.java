@@ -37,7 +37,9 @@ public class PercentageService {
         double communityDepleted = 0;
         double gridPortion = 0;
 
-        if (communityProduced > 0) {
+        if (gridUsed > 0) {
+            communityDepleted = 100;
+        } else if (communityProduced > 0) {
             communityDepleted = (communityUsed / communityProduced) * 100;
             communityDepleted = Math.min(communityDepleted, 100);
         }

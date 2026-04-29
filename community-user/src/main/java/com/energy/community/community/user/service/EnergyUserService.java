@@ -25,7 +25,22 @@ public class EnergyUserService {
     }
 
     public void sendEnergyUsage() {
-        double kwh = 1 + random.nextDouble() * 4;
+        int hour = LocalDateTime.now().getHour();
+
+        double baseUsage;
+
+        if (hour >= 6 && hour < 9) {
+            baseUsage = 0.010;       // Morgen-Peak
+        } else if (hour >= 9 && hour < 17) {
+            baseUsage = 0.005;       // Tagsüber niedriger Verbrauch
+        } else if (hour >= 17 && hour < 22) {
+            baseUsage = 0.012;       // Abend-Peak
+        } else {
+            baseUsage = 0.006;       // Nacht: Grundverbrauch
+        }
+
+        double usageFactor = 0.8 + random.nextDouble() * 0.4; // 0.8 bis 1.2
+        double kwh = baseUsage * usageFactor * 150;
 
         EnergyMessage message = new EnergyMessage(
                 "USER",
