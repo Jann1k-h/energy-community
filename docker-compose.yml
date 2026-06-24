@@ -1,26 +1,33 @@
 services:
-  database:
-    image: postgres:alpine
-    ports:
-      - "5432:5432"
+  db:
+    container_name: postgres-energy-community
+    image: postgres:latest
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
       POSTGRES_DB: energydb
+      POSTGRES_USER: lexan
+      POSTGRES_PASSWORD: lexan
+      PGDATA: /data/postgres
+    volumes:
+      - db:/data/postgres
+    ports:
+      - "5332:5432"
+    networks:
+      - energy-network
+    restart: unless-stopped
 
   rabbitmq:
-    image: rabbitmq:management-alpine
+    container_name: rabbitmq-energy-community
+    image: rabbitmq:4-management
     ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: admin
-      RABBITMQ_DEFAULT_PASS: admin
+      - "5672:5672"      # RabbitMQ für Spring Boot
+      - "15672:15672"    # RabbitMQ Web UI
+    networks:
+      - energy-network
+    restart: unless-stopped
 
-  pgadmin:
-    image: dpage/pgadmin4
-    ports:
-      - "5050:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+networks:
+  energy-network:
+    driver: bridge
+
+volumes:
+  db:
