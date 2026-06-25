@@ -13,10 +13,10 @@
 	</parent>
 
 	<groupId>at.technikum</groupId>
-	<artifactId>CommunityEnergyUser</artifactId>
+	<artifactId>UsageService</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>CommunityEnergyUser</name>
-	<description>Community Energy User</description>
+	<name>UsageService</name>
+	<description>Usage Service</description>
 
 	<properties>
 		<java.version>17</java.version>
