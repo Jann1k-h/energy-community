@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="at.technikum.gui.GuiController">
+
+  <padding>
+    <Insets top="24" right="24" bottom="24" left="24"/>
+  </padding>
+
+  <top>
+    <HBox alignment="CENTER_LEFT" spacing="20" maxWidth="Infinity">
+      <VBox>
+        <Label text="Energy Community Dashboard"/>
+        <Label text="Live overview of community energy usage"/>
+      </VBox>
+
+      <!-- drückt button nach rechts-->
+      <Region HBox.hgrow="ALWAYS"/>
+
+      <Button text="Refresh Current Data" onAction="#refresh"/>
+    </HBox>
+  </top>
+
+  <center>
+    <VBox spacing="30" maxWidth="Infinity">
+
+      <BorderPane.margin>
+        <Insets top="24" right="0" bottom="0" left="0"/>
+      </BorderPane.margin>
+
+      <GridPane hgap="15" vgap="12">
+
+        <columnConstraints>
+          <ColumnConstraints percentWidth="50"/>
+          <ColumnConstraints percentWidth="50"/>
+        </columnConstraints>
+
+        <Label text="Community Pool" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label fx:id="communityDepleted" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <Label text="Used community energy" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+
+        <Label text="Grid Portion" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label fx:id="gridPortion" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Label text="Energy taken from grid" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+      </GridPane>
+
+      <Label text="Historical Usage"/>
+
+
+      <GridPane hgap="15" vgap="12">
+
+        <columnConstraints>
+          <ColumnConstraints percentWidth="20"/>
+          <ColumnConstraints percentWidth="20"/>
+          <ColumnConstraints percentWidth="20"/>
+          <ColumnConstraints percentWidth="20"/>
+          <ColumnConstraints percentWidth="20"/>
+        </columnConstraints>
+
+        <Label text="Start Date" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="startDatePicker" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+
+        <Label text="Start Time" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <ChoiceBox fx:id="startTimePicker" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="End Date" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+        <DatePicker fx:id="endDatePicker" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+
+        <Label text="End Time" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+        <ChoiceBox fx:id="endTimePicker" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+
+        <Button text="Show Data" onAction="#showData" GridPane.rowIndex="1" GridPane.columnIndex="4"/>
+
+      </GridPane>
+
+
+      <GridPane hgap="15" vgap="12">
+
+        <columnConstraints>
+          <ColumnConstraints percentWidth="33.33"/>
+          <ColumnConstraints percentWidth="33.33"/>
+          <ColumnConstraints percentWidth="33.33"/>
+        </columnConstraints>
+
+        <Label text="Community Produced" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label fx:id="communityProduced" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+
+        <Label text="Community Used" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label fx:id="communityUsed" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Grid Used" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+        <Label fx:id="gridUsed" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+      </GridPane>
+
+      <BarChart fx:id="usageChart"
+                title="Historical Energy Usage"
+                animated="false"
+                legendVisible="false"
+                prefHeight="280">
+
+        <xAxis>
+          <CategoryAxis label="Type"/>
+        </xAxis>
+
+        <yAxis>
+          <NumberAxis label="kWh"/>
+        </yAxis>
+
+      </BarChart>
+
+    </VBox>
+
+  </center>
+
+</BorderPane>
