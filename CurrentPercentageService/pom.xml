@@ -15,8 +15,8 @@
 	<groupId>at.technikum</groupId>
 	<artifactId>CurrentPercentageService</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>CommunityEnergyProducer</name>
-	<description>Community Energy Producer</description>
+	<name>CurrentPercentageService</name>
+	<description>Current Percentage Service</description>
 
 	<properties>
 		<java.version>17</java.version>
