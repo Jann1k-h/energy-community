@@ -5,36 +5,51 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service // Spring-Klasse mit Logik
 public class CommunityEnergyUser {
 
+    // Feld für Objekt RabbitTemplate deklarieren
     private final RabbitTemplate rabbitTemplate;
 
-    // Constructor holt sich von Spring RabbitTemplate, damit Producer Nachrichten senden kann
+    // Konstruktor-Injection
+    // CommunityEnergyUser braucht RabbitTemplate zum Versenden von Nachrichten
+    // Spring Boot erstellt RabbitTemplate automatisch.
+    // Spring Boot übergibt es in den Konstruktor.
+    // Die Klasse speichert es in ihrer Variable.
     public CommunityEnergyUser(RabbitTemplate rabbitTemplate) {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    @Scheduled(fixedRate = 3000)
-    public void sendMessage() {
+    // Methode wird automatisch alle 3000 Millisekunden ausgeführt
+    @Scheduled(fixedRate = 1000)
+    public void sendMessage() throws Exception {
 
-                SendMessage message = new SendMessage(
-                "USER",
-                "COMMUNITY",
-                calculatedKwh(),
-                LocalDateTime.now().toString()
+        // Random Delay zwischen 1 und 5 Sekunden
+        int delay = ThreadLocalRandom.current().nextInt(0, 4001);
+        Thread.sleep(delay);
+
+        // Message-Objekt erstellen
+        SendMessage message = new SendMessage(
+            "USER",
+            "COMMUNITY",
+            calculatedKwh(),
+            LocalDateTime.now().toString()
         );
 
-        // RabbitMQ kann kein Java Objekt verstehen, deswegen als String versenden toString() in jeweiligen SendMessage Klasse festgelegt
+        // Nachricht wird als String versendet
+        // toString() ist in SendMessage-Klasse festgelegt
         String stringMessage = message.toString();
 
+        // Sendet stringMessage an die Queue energy.queue
         rabbitTemplate.convertAndSend(RabbitConfig.ENERGY_QUEUE, stringMessage);
 
+        // Ausgabe in Konsole
         System.out.println("Nachricht gesendet: " + stringMessage);
     }
 
-    // Verbrauch bestimmen
+    // Energieverbrauch anhand der aktuelle Uhrzeit bestimmen
     private double calculatedKwh() {
 
         int hour = LocalDateTime.now().getHour();

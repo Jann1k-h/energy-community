@@ -6,10 +6,13 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-// Tabellen-Kontrukt
+// Java-Abbild der Datenbanktabelle current_percentage_table
 @Entity
 @Table(name = "current_percentage_table")
 public class CurrentPercentageTable {
+
+    // Spalten der Tabelle
+    // Primary Key
     @Id
     private LocalDateTime hour;
     private double communityDepleted;

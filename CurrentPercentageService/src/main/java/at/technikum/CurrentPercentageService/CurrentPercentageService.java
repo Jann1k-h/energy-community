@@ -10,14 +10,20 @@ import org.springframework.stereotype.Service;
 @Service // Spring-Klasse mit Logik
 public class CurrentPercentageService {
 
-    // Objekt deklarieren, ohne dem kann CurrentPercentageService nicht auf currentPercentageTableRepository zugreifen und befehle wie .findById .save,... ausführen
-    private CurrentPercentageTableRepository currentPercentageTableRepository;
+    // Feld für Objekt CurrentPercentageTableRepository deklarieren,
+    // ohne dem kann CurrentPercantageService nicht auf hourlyUsageTableRepository zugreifen und befehle wie .findById .save,... ausführen
+    private final CurrentPercentageTableRepository currentPercentageTableRepository;
 
-    // Objekt deklarieren, ohne dem kann CurrentpercentageService nicht auf hourlyUsageTableRepository zugreifen und befehle wie .findById .save,... ausführen
-    private HourlyUsageTableRepository hourlyUsageTableRepository;
+    // Feld für Objekt HourlyUsageTableRepository deklarieren,
+    // ohne dem kann CurrentPercantageService nicht auf hourlyUsageTableRepository zugreifen und befehle wie .findById .save,... ausführen
+    private final HourlyUsageTableRepository hourlyUsageTableRepository;
 
-    // Konstruktor gibt CurrentPercentageService beide Repositories
-    // Da die Repositories Interfaces sind, kann man nicht in der Zeile drüber = new ... machen, sondern löst es über den Konstruktor
+    // --------------------------------------------------
+    // Konstruktor-Injection
+    // CurrentPercantageService braucht currentPercentageTableRepository / HourlyUsageTableRepository zum Zugriff auf die Datenbank
+    // Spring Boot erstellt die Repository-Implementierung automatisch.
+    // Spring Boot übergibt sie in den Konstruktor.
+    // Die Klasse speichert sie in ihrer Variable.
     public CurrentPercentageService(
             CurrentPercentageTableRepository currentPercentageTableRepository,
             HourlyUsageTableRepository hourlyUsageTableRepository
@@ -25,35 +31,51 @@ public class CurrentPercentageService {
         this.currentPercentageTableRepository = currentPercentageTableRepository;
         this.hourlyUsageTableRepository = hourlyUsageTableRepository;
     }
+    // --------------------------------------------------
 
     @RabbitListener(queues = RabbitConfig.USAGE_UPDATE_QUEUE)
+    // Wenn in Queue Nachricht ankommt, wird Methode angerufen und inhalt als Parameter in Methode übergeben
     public void receiveMessage(String message) {
 
+        // String message wird in receiveMessage-Objekt umgewandelt
         ReceiveMessage receiveMessage = new ReceiveMessage(message);
 
-        // Objektdelarierung
+        // Feld für Objekt CurrentPercentageTable deklarieren
         CurrentPercentageTable currentPercentageTableEntry;
 
-        // Objektinitialisierung
+        // Objektinitialisierung, um später Werte aus HourlyUsageTable holen zu können
         HourlyUsageTable hourlyUsageTableEntry = hourlyUsageTableRepository
                 .findById(receiveMessage.getDatetime())
                 .orElse(null);
 
+        // Wenn in Tabelle Eintrag mit aktuellen Stunde existiert, wird Zeit geholt
         if (currentPercentageTableRepository.findById(receiveMessage.getDatetime()).isPresent()) {
-            // existiert schon → aus DB holen
+
             currentPercentageTableEntry = currentPercentageTableRepository
                     .findById(receiveMessage.getDatetime())
                     .get();
+
+        // Ansonsten wird neuer Eintrag in Tabelle erzeugt mit der Zeit aus der Nachricht
         } else {
-            // existiert nicht → neues Objekt erstellen
+            // Java-Objekt erstellen für neue Tabellenzeile
             currentPercentageTableEntry = new CurrentPercentageTable();
+            // In dem neuen Eintrag Stunde setzen
             currentPercentageTableEntry.setHour(receiveMessage.getDatetime());
         }
 
-        currentPercentageTableEntry.setCommunityDepleted(hourlyUsageTableEntry.getCommunityUsed() / hourlyUsageTableEntry.getCommunityProduced() * 100);
+        // Community-Depleted berechnen
+        // Gibt an, wie viel Prozent der produzierten Community-Energie bereits verbraucht wurde
+        currentPercentageTableEntry.setCommunityDepleted(
+                hourlyUsageTableEntry.getCommunityUsed() / hourlyUsageTableEntry.getCommunityProduced() * 100
+        );
 
-        currentPercentageTableEntry.setGridPortion(hourlyUsageTableEntry.getGridUsed() / (hourlyUsageTableEntry.getCommunityUsed() + hourlyUsageTableEntry.getGridUsed()) * 100);
+        // Grid-Portion berechnen
+        // Gibt an, wie viel Prozent des gesamten Verbrauchs aus dem öffentlichen Netz kommt
+        currentPercentageTableEntry.setGridPortion(
+                hourlyUsageTableEntry.getGridUsed() / (hourlyUsageTableEntry.getCommunityUsed() + hourlyUsageTableEntry.getGridUsed()) * 100
+        );
 
+        // aktuellen Stand von hourlyUsageTableEntry in Datenbank speichern
         currentPercentageTableRepository.save(currentPercentageTableEntry);
 
 

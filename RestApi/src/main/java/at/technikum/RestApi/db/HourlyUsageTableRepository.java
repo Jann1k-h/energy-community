@@ -5,8 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-// Ohne interface müsste man DB Verbindungen selbst herstellen und sql befehle selber schreiben
-// Spring Data JPA liefert funktionen wie findById, save, delete, ...
+// Repository für den Zugriff auf die Tabelle hourly_usage_table
+// Ohne Spring Data JPA müsste man DB-Verbindungen und SQL-Befehle selbst schreiben.
+// Durch JpaRepository bekommt man fertige Methoden wie findById, save, delete, findAll, ...
+// Im JpaRepository schreibt man Tabelle, mit der Repository arbeitet und Datentyp vom Primary Key, also HourlyUsageTable und LocalDateTime
 public interface HourlyUsageTableRepository extends JpaRepository<HourlyUsageTable, LocalDateTime> {
     List<HourlyUsageTable> findByHourBetween(LocalDateTime hourAfter, LocalDateTime hourBefore);
 }

@@ -6,10 +6,13 @@ import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
-// Tabellen-Kontrukt
+// Java-Abbild der Datenbanktabelle hourly_usage_table
 @Entity
 @Table(name = "hourly_usage_table")
 public class HourlyUsageTable {
+
+    // Spalten der Tabelle
+    // PrimaryKey
     @Id
     private LocalDateTime hour;
     private double communityProduced;

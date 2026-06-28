@@ -4,8 +4,9 @@ import java.time.LocalDateTime;
 
 public class ReceiveMessage {
 
-    private String text;
-    private LocalDateTime datetime;
+    // final, da nach Erstellen Werte nicht mehr verändert werden
+    private final String text;
+    private final LocalDateTime datetime;
 
     public ReceiveMessage(String message) {
 
