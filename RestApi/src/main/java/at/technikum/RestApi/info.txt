@@ -1,0 +1,2 @@
+die 4 db files nochmal hier, da java den aufbau von der db nicht kennt
+in den tabellen werden felder definiert
