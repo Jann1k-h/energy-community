@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.control.Button?>
+<VBox alignment="BASELINE_LEFT" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="at.technikum.gui.GuiController">
+  <padding>
+    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+  </padding>
+
+  <Label text="Community Pool"/>
+  <Label fx:id="community_pool"/>
+
+  <Label text="Grid Portion"/>
+  <Label fx:id="grid_portion"/>
+
+  <Button text="refresh" onAction="#refresh"/>
+
+
+  <Label text="Start"/>
+  <Label fx:id="start"/>
+
+  <Label text="End"/>
+  <Label fx:id="end"/>
+
+  <Button text="show data" onAction="#show_data"/>
+
+  <Label text="Community produced"/>
+  <Label fx:id="community_produced"/>
+
+  <Label text="Community used"/>
+  <Label fx:id="community_used"/>
+
+  <Label text="Grid used"/>
+  <Label fx:id="grid_used"/>
+
+</VBox>
