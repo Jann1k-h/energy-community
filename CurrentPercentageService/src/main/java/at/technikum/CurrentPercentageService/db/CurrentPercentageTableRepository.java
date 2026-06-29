@@ -6,7 +6,8 @@ import java.time.LocalDateTime;
 
 // Repository für den Zugriff auf die Tabelle hourly_usage_table
 // Ohne Spring Data JPA müsste man DB-Verbindungen und SQL-Befehle selbst schreiben.
-// Durch JpaRepository bekommt man fertige Methoden wie findById, save, delete, findAll, ...
+// Durch JpaRepository bekommt man fertige Methoden für Speichern, Laden, Löschen, Suchen
+
 // Im JpaRepository schreibt man Tabelle, mit der Repository arbeitet und Datentyp vom Primary Key, also CurrentPercentageTable und LocalDateTime
 public interface CurrentPercentageTableRepository extends JpaRepository<CurrentPercentageTable, LocalDateTime> {
 }

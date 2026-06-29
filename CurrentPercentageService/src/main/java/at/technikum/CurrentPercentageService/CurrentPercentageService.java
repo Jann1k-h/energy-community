@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class CurrentPercentageService {
 
     // Feld für Objekt CurrentPercentageTableRepository deklarieren,
-    // ohne dem kann CurrentPercantageService nicht auf hourlyUsageTableRepository zugreifen und befehle wie .findById .save,... ausführen
+    // ohne dem kann CurrentPercantageService nicht auf currentPercentageTableRepository zugreifen und befehle wie .findById .save,... ausführen
     private final CurrentPercentageTableRepository currentPercentageTableRepository;
 
     // Feld für Objekt HourlyUsageTableRepository deklarieren,
@@ -20,6 +20,12 @@ public class CurrentPercentageService {
 
     // --------------------------------------------------
     // Konstruktor-Injection
+    //
+    // Injection:
+    // Klasse erstellt benötigten Objekte nicht selbst mit "new",
+    // sondern bekommt sie von Spring Boot übergeben
+    // --> Objekte sind bereits richtig erstellt, konfiguriert und verwaltet
+    //
     // CurrentPercantageService braucht currentPercentageTableRepository / HourlyUsageTableRepository zum Zugriff auf die Datenbank
     // Spring Boot erstellt die Repository-Implementierung automatisch.
     // Spring Boot übergibt sie in den Konstruktor.
@@ -43,11 +49,16 @@ public class CurrentPercentageService {
         // Feld für Objekt CurrentPercentageTable deklarieren
         CurrentPercentageTable currentPercentageTableEntry;
 
+
+        // --------------------------------------------------
         // Objektinitialisierung, um später Werte aus HourlyUsageTable holen zu können
         HourlyUsageTable hourlyUsageTableEntry = hourlyUsageTableRepository
                 .findById(receiveMessage.getDatetime())
                 .orElse(null);
+        // --------------------------------------------------
 
+
+        // --------------------------------------------------
         // Wenn in Tabelle Eintrag mit aktuellen Stunde existiert, wird Zeit geholt
         if (currentPercentageTableRepository.findById(receiveMessage.getDatetime()).isPresent()) {
 
@@ -62,6 +73,8 @@ public class CurrentPercentageService {
             // In dem neuen Eintrag Stunde setzen
             currentPercentageTableEntry.setHour(receiveMessage.getDatetime());
         }
+        // --------------------------------------------------
+
 
         // Community-Depleted berechnen
         // Gibt an, wie viel Prozent der produzierten Community-Energie bereits verbraucht wurde
@@ -79,7 +92,4 @@ public class CurrentPercentageService {
         currentPercentageTableRepository.save(currentPercentageTableEntry);
 
     }
-
 }
-
-

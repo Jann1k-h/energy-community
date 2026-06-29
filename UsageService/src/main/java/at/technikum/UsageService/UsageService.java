@@ -10,14 +10,21 @@ import org.springframework.stereotype.Service;
 public class UsageService {
 
     // Feld für Objekt RabbitTemplate deklarieren
+    // ohne dem kann UsageService nicht auf rabbitTemplate zugreifen und Befehle wie convertAndSend ausführen
     private final RabbitTemplate rabbitTemplate;
 
     // Feld für Objekt HourlyUsageTableRepository deklarieren,
-    // ohne dem kann UsageService nicht auf hourlyUsageTableRepository zugreifen und befehle wie .findById .save,... ausführen
+    // ohne dem kann UsageService nicht auf hourlyUsageTableRepository zugreifen und Befehle wie .findById .save,... ausführen
     private final HourlyUsageTableRepository hourlyUsageTableRepository;
 
     // --------------------------------------------------
     // Konstruktor-Injection
+    //
+    // Injection:
+    // Klasse erstellt benötigten Objekte nicht selbst mit "new",
+    // sondern bekommt sie von Spring Boot übergeben
+    // --> Objekte sind bereits richtig erstellt, konfiguriert und verwaltet
+    //
     // 1 UsageService braucht RabbitTemplate zum Versenden von Nachrichten
     // 1 Spring Boot erstellt RabbitTemplate automatisch.
     // 1 Spring Boot übergibt es in den Konstruktor.
