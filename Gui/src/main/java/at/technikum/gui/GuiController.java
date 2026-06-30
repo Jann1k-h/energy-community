@@ -104,9 +104,9 @@ public class GuiController {
         double community_used = root.path("communityUsed").asDouble();
         double grid_used = root.path("gridUsed").asDouble();
 
-        communityProduced.setText(community_produced + " kWh");
-        communityUsed.setText(community_used + " kWh");
-        gridUsed.setText(grid_used + " kWh");
+        communityProduced.setText(String.format("%.3f", community_produced) + " kWh");
+        communityUsed.setText(String.format("%.3f", community_used) + " kWh");
+        gridUsed.setText(String.format("%.3f", grid_used) + " kWh");
 
         usageChart.getData().clear();
 
