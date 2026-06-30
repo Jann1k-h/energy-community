@@ -16,8 +16,7 @@ public class UsageServiceApplication {
 
     public static void main(String[] args) {
 
-        // startet Spring:
-        // startet Spring-Boot-Anwendung
+        // startet Spring-Boot-Anwendung:
         // ladet alle Spring-Komponenten
         // liest application.properties
         // startet RabbitMQ-Verbindung

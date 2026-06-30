@@ -53,7 +53,6 @@ public class UsageService {
 
         // Wenn in Tabelle Eintrag mit aktuellen Stunde existiert, wird Zeit geholt
         if (hourlyUsageTableRepository.findById(receiveMessage.getDatetime()).isPresent()) {
-            // existiert schon → aus DB holen
             hourlyUsageTableEntry = hourlyUsageTableRepository
                     .findById(receiveMessage.getDatetime())
                     .get();
