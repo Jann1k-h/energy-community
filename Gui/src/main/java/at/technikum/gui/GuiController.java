@@ -58,7 +58,7 @@ public class GuiController {
     @FXML
     // Throws Exception, weil bei Aufruf Fehler entstehen können und JAVA zwingt diese zu behandeln
     private void refresh() throws Exception {
-        String url = "http://localhost:8080/energy/current";
+        String url = "http://localhost:8084/energy/current";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -88,7 +88,7 @@ public class GuiController {
         String start = startDatePicker.getValue() + "T" + startTimePicker.getValue() + ":00";
         String end = endDatePicker.getValue() + "T" + endTimePicker.getValue() + ":00";
 
-        String url = "http://localhost:8080/energy/historical?start=" + start + "&end=" + end;
+        String url = "http://localhost:8084/energy/historical?start=" + start + "&end=" + end;
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
