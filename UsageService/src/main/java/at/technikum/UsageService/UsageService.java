@@ -104,10 +104,11 @@ public class UsageService {
 
         // Message-Objekt erstellen
         SendMessage messageToCurrentPercentageService = new SendMessage(
-                "CurrentPercentageService",
-                receiveMessage.getDatetime().toString()
+                hourlyUsageTableEntry.getHour(),
+                hourlyUsageTableEntry.getCommunityProduced(),
+                hourlyUsageTableEntry.getCommunityUsed(),
+                hourlyUsageTableEntry.getGridUsed()
         );
-
         // Nachricht wird als String versendet
         // toString() ist in SendMessage-Klasse festgelegt
         String stringMessage = messageToCurrentPercentageService.toString();
