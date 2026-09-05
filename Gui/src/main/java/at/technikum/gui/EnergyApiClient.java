@@ -8,8 +8,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-// Diese Klasse ist ausschließlich für die Kommunikation
-// zwischen GUI und REST API zuständig.
+// Diese Klasse ist für die kommunikation zwischen GUI und RESTPI zuständig
 public class EnergyApiClient {
 
     // Basis-Adresse der REST API.

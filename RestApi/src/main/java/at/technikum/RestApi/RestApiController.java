@@ -1,5 +1,4 @@
 package at.technikum.RestApi;
-import at.technikum.RestApi.db.CurrentPercentageTable;
 import at.technikum.RestApi.db.CurrentPercentageTableRepository;
 import at.technikum.RestApi.db.HourlyUsageTable;
 import at.technikum.RestApi.db.HourlyUsageTableRepository;
@@ -7,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import at.technikum.RestApi.dto.HistoricalUsageDto;
+import at.technikum.RestApi.dto.CurrentPercentageDto;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -38,17 +38,21 @@ public class RestApiController {
     // --------------------------------------------------
 
     @GetMapping("/energy/current")
-    // http://localhost:8080/energy/current
-    // Endpoint gibt die Prozentwerte der aktuellen Stunde zurück
-    public CurrentPercentageTable getCurrentPercentageTable() {
+// Endpoint gibt die Prozentwerte der aktuellen Stunde zurück.
+    public CurrentPercentageDto getCurrentPercentageTable() {
 
-        // Aktuelle Zeit holen und auf volle Stunde runden
+        // Aktuelle Zeit holen und auf volle Stunde runden.
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.HOURS);
 
-        // Eintrag aus current_percentage_table mit aktueller Stunde suchen
-        // Wenn Eintrag existiert, wird er zurückgegeben
-        // Wenn kein Eintrag existiert, wird null zurückgegeben
-        return currentPercentageTableRepository.findById(now).orElse(null);
+        // Eintrag aus current_percentage_table mit aktueller Stunde suchen.
+        // Wenn ein Eintrag existiert, wird daraus ein DTO erstellt.
+        return currentPercentageTableRepository.findById(now)
+                .map(currentPercentageTable -> new CurrentPercentageDto(
+                        currentPercentageTable.getHour(),
+                        currentPercentageTable.getCommunityDepleted(),
+                        currentPercentageTable.getGridPortion()
+                ))
+                .orElse(null);
     }
 
     @GetMapping("/energy/historical")
