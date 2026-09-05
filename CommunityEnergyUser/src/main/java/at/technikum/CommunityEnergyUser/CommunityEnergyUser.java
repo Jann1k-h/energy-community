@@ -1,6 +1,6 @@
 package at.technikum.CommunityEnergyUser;
 
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -10,18 +10,15 @@ import java.util.concurrent.ThreadLocalRandom;
 @Service // Spring-Klasse mit Logik
 public class CommunityEnergyUser {
 
-    // Feld für Objekt RabbitTemplate deklarieren
-    private final RabbitTemplate rabbitTemplate;
+    // EnergyMessagePublisher ist für das Senden
+// der RabbitMQ-Nachrichten zuständig.
+    private final EnergyMessagePublisher messagePublisher;
 
-    // Konstruktor-Injection
-    // CommunityEnergyUser braucht RabbitTemplate zum Versenden von Nachrichten
-    // Spring Boot erstellt RabbitTemplate automatisch.
-    // Spring Boot übergibt es in den Konstruktor.
-    // Die Klasse speichert es in ihrer Variable.
-    public CommunityEnergyUser(RabbitTemplate rabbitTemplate) {
-        this.rabbitTemplate = rabbitTemplate;
+    public CommunityEnergyUser(
+            EnergyMessagePublisher messagePublisher
+    ) {
+        this.messagePublisher = messagePublisher;
     }
-
     // Methode wird automatisch alle 3000 Millisekunden ausgeführt
     @Scheduled(fixedRate = 1000)
     public void sendMessage() throws Exception {
@@ -38,15 +35,11 @@ public class CommunityEnergyUser {
             LocalDateTime.now().toString()
         );
 
-        // Nachricht wird als String versendet
-        // toString() ist in SendMessage-Klasse festgelegt
-        String stringMessage = message.toString();
+        // Die fertige Nachricht wird vom EnergyMessagePublisher
+// an RabbitMQ gesendet.
+        messagePublisher.publish(message);
 
-        // Sendet stringMessage an die Queue energy.queue
-        rabbitTemplate.convertAndSend(RabbitConfig.ENERGY_QUEUE, stringMessage);
-
-        // Ausgabe in Konsole
-        System.out.println("Nachricht gesendet: " + stringMessage);
+        System.out.println("Nachricht gesendet: " + message);
     }
 
     // Energieverbrauch anhand der aktuelle Uhrzeit bestimmen
