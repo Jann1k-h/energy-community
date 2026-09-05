@@ -80,7 +80,7 @@ public class CurrentPercentageService {
         );
 
         // Grid-Portion berechnen.
-        // Gibt an, wie viel Prozent des gesamten Verbrauchs
+        // Gibt an, wie viel Prozent des !gesamten! Verbrauchs
         // aus dem öffentlichen Netz kommt.
         double totalUsed = receiveMessage.getCommunityUsed()
                 + receiveMessage.getGridUsed();

@@ -58,7 +58,7 @@ public class CommunityEnergyUser {
             kwh = 0.0012 + Math.random() * 0.0020;   // 0.0012 bis 0.0032 kWh
 
         // Nacht sehr niedriger Verbrauch
-        } else if (hour >= 0 && hour <= 5) {
+        } else if ( hour <= 5) {
             kwh = 0.0001 + Math.random() * 0.0004;   // 0.0001 bis 0.0005 kWh
 
         // ansonsten normaler Verbrauch
