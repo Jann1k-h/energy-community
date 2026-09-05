@@ -6,12 +6,13 @@ import at.technikum.RestApi.db.HourlyUsageTableRepository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import at.technikum.RestApi.dto.HistoricalUsageDto;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+
 
 @RestController
 public class RestApiController {
@@ -55,7 +56,7 @@ public class RestApiController {
     // Da aus mehrere json outputs 1 summierter JSON-Output entstehen soll, muss man irgendwie JSON zurückgeben
     // am besten mit Mapping
     // Mapping besteht aus 2 werten: Schlüssel, Wert
-    public Map<String, Double> getHistoricalUsage(
+    public HistoricalUsageDto getHistoricalUsage(
             // Startzeit wird aus URL-Parameter start gelesen
             @RequestParam LocalDateTime start,
 
@@ -83,19 +84,14 @@ public class RestApiController {
             totalGridUsed += hourlyUsageTable.getGridUsed();
         }
 
-        // Map für JSON-Ergebnis erstellen
-        // Schlüssel = Name im JSON
-        // Wert = berechnete Gesamtsumme
-        Map<String, Double> result = new HashMap<>();
+        // DTO erstellen und zurückgeben.
+// Spring Boot wandelt das DTO automatisch in JSON um.
+        return new HistoricalUsageDto(
+                totalCommunityProduced,
+                totalCommunityUsed,
+                totalGridUsed
+        );
 
-        // Summierte Werte in Map speichern
-        result.put("communityProduced", totalCommunityProduced);
-        result.put("communityUsed", totalCommunityUsed);
-        result.put("gridUsed", totalGridUsed);
-
-        // Map zurückgeben
-        // Spring Boot wandelt Map automatisch in JSON um
-        return result;
     }
 
 }

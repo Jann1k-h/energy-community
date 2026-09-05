@@ -6,13 +6,6 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
-
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 
 public class GuiController {
 
@@ -26,6 +19,10 @@ public class GuiController {
     public Label communityUsed;
     public Label gridUsed;
     public BarChart<String, Number> usageChart;
+
+    // EnergyApiClient übernimmt die HTTP-Kommunikation.
+    // Der Controller ist dadurch nur noch für die GUI zuständig.
+    private final EnergyApiClient energyApiClient = new EnergyApiClient();
 
     @FXML
     public void initialize() throws Exception {
@@ -54,73 +51,74 @@ public class GuiController {
         endTimePicker.setValue("12:00");
     }
 
-
     @FXML
-    // Throws Exception, weil bei Aufruf Fehler entstehen können und JAVA zwingt diese zu behandeln
+    // Aktualisiert die Anzeige der aktuellen Prozentwerte.
     private void refresh() throws Exception {
-        String url = "http://localhost:8084/energy/current";
+        CurrentPercentageDto currentPercentage =
+                energyApiClient.getCurrentPercentage();
 
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .build();
+        communityDepleted.setText(
+                String.format("%.2f%%", currentPercentage.communityDepleted())
+        );
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(response.body());
-
-        double community_depleted = root.path("communityDepleted").asDouble();
-        double grid_portion = root.path("gridPortion").asDouble();
-        String hour = root.path("hour").asString();
-
-        communityDepleted.setText(String.format("%.2f%%", community_depleted));
-        gridPortion.setText(String.format("%.2f%%", grid_portion));
-
-        System.out.println(communityDepleted);
-        System.out.println(gridPortion);
+        gridPortion.setText(
+                String.format("%.2f%%", currentPercentage.gridPortion())
+        );
     }
 
-
     @FXML
-    // Throws Exception, weil bei Aufruf Fehler entstehen können und JAVA zwingt diese zu behandeln
+    // Holt und zeigt die historischen Daten des gewählten Zeitraums.
     private void showData() throws Exception {
-        String start = startDatePicker.getValue() + "T" + startTimePicker.getValue() + ":00";
-        String end = endDatePicker.getValue() + "T" + endTimePicker.getValue() + ":00";
+        String start = startDatePicker.getValue()
+                + "T"
+                + startTimePicker.getValue()
+                + ":00";
 
-        String url = "http://localhost:8084/energy/historical?start=" + start + "&end=" + end;
+        String end = endDatePicker.getValue()
+                + "T"
+                + endTimePicker.getValue()
+                + ":00";
 
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .build();
+        HistoricalUsageDto historicalUsage =
+                energyApiClient.getHistoricalUsage(start, end);
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        double communityProducedValue =
+                historicalUsage.communityProduced();
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(response.body());
+        double communityUsedValue =
+                historicalUsage.communityUsed();
 
-        double community_produced = root.path("communityProduced").asDouble();
-        double community_used = root.path("communityUsed").asDouble();
-        double grid_used = root.path("gridUsed").asDouble();
+        double gridUsedValue =
+                historicalUsage.gridUsed();
 
-        communityProduced.setText(String.format("%.3f", community_produced) + " kWh");
-        communityUsed.setText(String.format("%.3f", community_used) + " kWh");
-        gridUsed.setText(String.format("%.3f", grid_used) + " kWh");
+        communityProduced.setText(
+                String.format("%.3f", communityProducedValue) + " kWh"
+        );
+
+        communityUsed.setText(
+                String.format("%.3f", communityUsedValue) + " kWh"
+        );
+
+        gridUsed.setText(
+                String.format("%.3f", gridUsedValue) + " kWh"
+        );
 
         usageChart.getData().clear();
 
         XYChart.Series<String, Number> series = new XYChart.Series<>();
 
-        series.getData().add(new XYChart.Data<>("Produced", community_produced));
-        series.getData().add(new XYChart.Data<>("Used", community_used));
-        series.getData().add(new XYChart.Data<>("Grid", grid_used));
+        series.getData().add(
+                new XYChart.Data<>("Produced", communityProducedValue)
+        );
+
+        series.getData().add(
+                new XYChart.Data<>("Used", communityUsedValue)
+        );
+
+        series.getData().add(
+                new XYChart.Data<>("Grid", gridUsedValue)
+        );
 
         usageChart.getData().add(series);
-
-
-        System.out.println(communityProduced);
-        System.out.println(communityUsed);
-        System.out.println(gridUsed);
     }
 }
