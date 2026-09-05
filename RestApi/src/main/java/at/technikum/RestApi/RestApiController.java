@@ -2,11 +2,14 @@ package at.technikum.RestApi;
 import at.technikum.RestApi.db.CurrentPercentageTableRepository;
 import at.technikum.RestApi.db.HourlyUsageTable;
 import at.technikum.RestApi.db.HourlyUsageTableRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import at.technikum.RestApi.dto.HistoricalUsageDto;
 import at.technikum.RestApi.dto.CurrentPercentageDto;
+import org.springframework.web.server.ResponseStatusException;
+
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -37,6 +40,7 @@ public class RestApiController {
     }
     // --------------------------------------------------
 
+
     @GetMapping("/energy/current")
 // Endpoint gibt die Prozentwerte der aktuellen Stunde zurück.
     public CurrentPercentageDto getCurrentPercentageTable() {
@@ -45,14 +49,17 @@ public class RestApiController {
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.HOURS);
 
         // Eintrag aus current_percentage_table mit aktueller Stunde suchen.
-        // Wenn ein Eintrag existiert, wird daraus ein DTO erstellt.
+        // Wenn kein Eintrag existiert, wird eine verständliche Exception geworfen.
         return currentPercentageTableRepository.findById(now)
                 .map(currentPercentageTable -> new CurrentPercentageDto(
                         currentPercentageTable.getHour(),
                         currentPercentageTable.getCommunityDepleted(),
                         currentPercentageTable.getGridPortion()
                 ))
-                .orElse(null);
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Für die aktuelle Stunde sind noch keine Energiedaten vorhanden."
+                ));
     }
 
     @GetMapping("/energy/historical")
@@ -67,6 +74,13 @@ public class RestApiController {
             // Endzeit wird aus URL-Parameter end gelesen
             @RequestParam LocalDateTime end
     ) {
+        // Der Startzeitpunkt darf nicht nach dem Endzeitpunkt liegen.
+        if (start.isAfter(end)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Der Startzeitpunkt darf nicht nach dem Endzeitpunkt liegen."
+            );
+        }
         // Alle Einträge aus hourly_usage_table zwischen start und end aus DB holen
         List<HourlyUsageTable> hourlyUsageTableList = hourlyUsageTableRepository.findByHourBetween(start, end);
 
